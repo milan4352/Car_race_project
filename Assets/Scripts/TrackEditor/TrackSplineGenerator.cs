@@ -65,7 +65,6 @@ namespace DrawAndRace.TrackEditor
             }
 
             spline.Closed = isClosedLoop;
-            _splineContainer.Rebuild();
 
             Debug.Log($"[DrawAndRace] Spline generated with {spline.Count} knots. ClosedLoop={isClosedLoop}");
             return spline;

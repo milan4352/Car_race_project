@@ -26,6 +26,7 @@ namespace DrawAndRace.Core
             var currentPipeline = GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
             if (currentPipeline != null)
             {
+                currentPipeline.supportsSoftShadows = _enableSoftShadows;
                 currentPipeline.shadowDistance = _shadowDistance;
                 currentPipeline.shadowCascadeCount = _shadowCascadeCount;
                 currentPipeline.supportsHDR = _enableHDR;

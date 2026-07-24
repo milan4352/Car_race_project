@@ -24,6 +24,7 @@ namespace DrawAndRace.TrackEditor
         public event Action<IReadOnlyList<Vector2>> OnDrawingCompleted;
 
         public bool IsDrawing => _isDrawing;
+        public float LineWidth => _lineWidth;
         public IReadOnlyList<Vector2> RawScreenPoints => _rawScreenPoints;
 
         public void OnPointerDown(PointerEventData eventData)
