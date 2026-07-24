@@ -116,6 +116,8 @@ namespace Unity.Cinemachine.Editor
             string[] importedAssets, string[] deletedAssets, string[] movedAssets, 
             string[] movedFromAssetPaths, bool didDomainReload)
         {
+            // Hierarchy icon callback disabled for Unity 6 compatibility
+            /*
             if (didDomainReload)
                 EditorApplication.hierarchyWindowItemOnGUI += (instanceID, r) =>
                 {
@@ -133,6 +135,7 @@ namespace Unity.Cinemachine.Editor
                         }
                     }
                 };
+            */
         }
 
         static Texture2D s_CinemachineLogoTexture = null;
