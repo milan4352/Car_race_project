@@ -28,6 +28,9 @@ namespace DrawAndRace.Vehicle
         public event Action<bool> OnWrongWayStatusChanged; // isWrongWay
 
         public int CurrentLap => _currentLap;
+        public int TotalLaps => _totalLapsToComplete;
+        public int TotalCheckpoints => _totalCheckpoints;
+        public int CurrentCheckpointIndex => _nextRequiredCheckpointIndex;
         public float CurrentLapTime => _currentLapTime;
         public float BestLapTime => _bestLapTime;
         public bool IsRaceActive => _isRaceActive;
@@ -50,6 +53,15 @@ namespace DrawAndRace.Vehicle
             _isRaceActive = true;
             _isWrongWay = false;
             Debug.Log($"[LapTracker] Race initialized with {_totalCheckpoints} checkpoints across {_totalLapsToComplete} laps.");
+        }
+
+        public void ResetTracker()
+        {
+            _nextRequiredCheckpointIndex = 0;
+            _currentLap = 1;
+            _currentLapTime = 0f;
+            _isRaceActive = true;
+            _isWrongWay = false;
         }
 
         private void OnTriggerEnter(Collider other)
