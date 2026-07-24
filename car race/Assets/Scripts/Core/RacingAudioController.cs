@@ -26,8 +26,6 @@ namespace DrawAndRace.Core
         [SerializeField] private float _maxPitch = 2.65f;
         [SerializeField] private float _maxSpeedKmh = 220f;
 
-        private bool _isInitialized = false;
-
         private void Start()
         {
             InitializeAudioSources();
@@ -76,8 +74,6 @@ namespace DrawAndRace.Core
             {
                 _engineAudioSource.Play();
             }
-
-            _isInitialized = true;
         }
 
         private AudioSource CreateAudioSource(string name, bool loop, float defaultVolume)
