@@ -12,44 +12,47 @@ namespace DrawAndRace.Editor
 {
     public static class TrackEditorSceneBuilder
     {
-        [MenuItem("DrawAndRace/Build Track Editor Scene")]
+        [MenuItem("DrawAndRace/Setup 3D Track Editor Scene")]
         public static void BuildScene()
         {
             // 1. Create New Scene
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
-            // 2. Setup Directional Light & Global Volume
-            GameObject lightObj = new GameObject("Directional Light");
+            // 2. Setup Directional Sun Light & Global Volume
+            GameObject lightObj = new GameObject("Directional Sun Light");
             Light light = lightObj.AddComponent<Light>();
             light.type = LightType.Directional;
-            light.intensity = 1.25f;
+            light.intensity = 1.35f;
+            light.color = new Color(1.0f, 0.96f, 0.88f); // Warm sunlight
+            light.shadows = LightShadows.Soft;
             lightObj.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
 
             GameObject volumeObj = new GameObject("Global Volume");
             UnityEngine.Rendering.Volume volume = volumeObj.AddComponent<UnityEngine.Rendering.Volume>();
             volume.isGlobal = true;
 
-            // 3. Create Ground Plane
+            // 3. Create Grass Terrain Ground Plane
             GameObject ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
             ground.name = "GroundPlane";
-            ground.transform.localScale = new Vector3(50, 1, 50); // 500m x 500m
-            Material groundMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-            groundMat.color = new Color(0.2f, 0.5f, 0.2f); // Grass green
-            ground.GetComponent<MeshRenderer>().sharedMaterial = groundMat;
+            ground.transform.localScale = new Vector3(80, 1, 80); // 800m x 800m
+            Material grassMat = URPShaderUtility.CreateLitMaterial(new Color(0.18f, 0.45f, 0.18f), 0.1f, 0.3f);
+            ground.GetComponent<MeshRenderer>().sharedMaterial = grassMat;
 
             // 4. Create Main Camera
             GameObject camObj = new GameObject("Main Camera");
             Camera cam = camObj.AddComponent<Camera>();
             cam.tag = "MainCamera";
+            cam.clearFlags = CameraClearFlags.Skybox;
+            cam.backgroundColor = new Color(0.45f, 0.65f, 0.85f);
             camObj.AddComponent<UniversalAdditionalCameraData>();
-            camObj.transform.SetPositionAndRotation(new Vector3(0, 80, -60), Quaternion.Euler(55, 0, 0)); // Top-down angled editor view
+            camObj.transform.SetPositionAndRotation(new Vector3(0, 90, -70), Quaternion.Euler(55, 0, 0)); // Top-down angled editor view
 
             // 5. Create EventSystem
             GameObject eventSystem = new GameObject("EventSystem");
             eventSystem.AddComponent<EventSystem>();
             eventSystem.AddComponent<StandaloneInputModule>();
 
-            // 6. Create UI Canvas for Track Drawing
+            // 6. Create UI Canvas for Track Drawing (with default UI material to prevent magenta pink shader bug)
             GameObject canvasObj = new GameObject("UI Canvas");
             Canvas canvas = canvasObj.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -66,7 +69,8 @@ namespace DrawAndRace.Editor
             panelRect.offsetMax = Vector2.zero;
 
             Image img = drawPanel.AddComponent<Image>();
-            img.color = new Color(0, 0, 0, 0.05f); // Transparent raycast target
+            img.material = Canvas.GetDefaultCanvasMaterial(); // Fix URP Pink Canvas Shader
+            img.color = new Color(0, 0, 0, 0.02f); // Transparent raycast target
 
             TrackDrawingCanvas drawingCanvas = drawPanel.AddComponent<TrackDrawingCanvas>();
 
@@ -80,9 +84,7 @@ namespace DrawAndRace.Editor
             TrackEditorManager manager = trackEditorObj.AddComponent<TrackEditorManager>();
 
             // Create and assign Asphalt Material
-            Material asphaltMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-            asphaltMat.color = new Color(0.15f, 0.15f, 0.15f); // Dark asphalt
-            asphaltMat.SetFloat("_Smoothness", 0.3f);
+            Material asphaltMat = URPShaderUtility.CreateLitMaterial(new Color(0.12f, 0.12f, 0.14f), 0.35f, 0.45f);
 
             // Save Material asset
             if (!AssetDatabase.IsValidFolder("Assets/Art")) AssetDatabase.CreateFolder("Assets", "Art");
