@@ -43,6 +43,7 @@ namespace DrawAndRace.Vehicle
         public float CurrentSpeedKmh => _rigidbody != null ? _rigidbody.linearVelocity.magnitude * 3.6f : 0f;
         public float SpeedMultiplier { get => _speedMultiplier; set => _speedMultiplier = Mathf.Clamp01(value); }
         public bool IsDrifting => _isHandbraking;
+        public bool IsHandbraking => _isHandbraking;
 
         private void Awake()
         {
