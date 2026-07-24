@@ -8,104 +8,176 @@ namespace DrawAndRace.Editor
 {
     public static class CarPrefabBuilder
     {
-        [MenuItem("DrawAndRace/Build 3D Sports Car Prefab")]
-        public static GameObject BuildCarPrefab()
+        [MenuItem("DrawAndRace/Build All 3 Real-Life Sports Cars")]
+        public static void BuildAllCars()
+        {
+            BuildCarPrefab_Red();
+            BuildCarPrefab_Blue();
+            BuildCarPrefab_Gold();
+            Debug.Log("[CarPrefabBuilder] Successfully created all 3 real-life sports car prefabs in Assets/Art/Models/!");
+        }
+
+        [MenuItem("DrawAndRace/Build 3D Sports Car - Metallic Red Supercar")]
+        public static GameObject BuildCarPrefab_Red()
+        {
+            return CreateCarModel("SportsCar_Red", new Color(0.85f, 0.08f, 0.08f), 0.92f, 0.95f, CarStyle.SupercarWithSpoiler);
+        }
+
+        [MenuItem("DrawAndRace/Build 3D Sports Car - Cobalt Blue GT Racer")]
+        public static GameObject BuildCarPrefab_Blue()
+        {
+            return CreateCarModel("SportsCar_Blue", new Color(0.08f, 0.35f, 0.85f), 0.88f, 0.90f, CarStyle.GTRacerWithVents);
+        }
+
+        [MenuItem("DrawAndRace/Build 3D Sports Car - Liquid Gold Hypercar")]
+        public static GameObject BuildCarPrefab_Gold()
+        {
+            return CreateCarModel("SportsCar_Gold", new Color(0.95f, 0.75f, 0.12f), 0.96f, 0.96f, CarStyle.WidebodyHypercar);
+        }
+
+        private enum CarStyle { SupercarWithSpoiler, GTRacerWithVents, WidebodyHypercar }
+
+        private static GameObject CreateCarModel(string carName, Color paintColor, float metallic, float smoothness, CarStyle style)
         {
             // 1. Create Car Root GameObject
-            GameObject carObj = new GameObject("SportsCar");
+            GameObject carObj = new GameObject(carName);
             Rigidbody rb = carObj.AddComponent<Rigidbody>();
-            rb.mass = 1450f;
-            rb.drag = 0.05f;
+            rb.mass = 1420f;
+            rb.drag = 0.04f;
             rb.angularDrag = 2.5f;
             rb.interpolation = RigidbodyInterpolation.Interpolate;
 
-            // Add Vehicle Controllers
+            // Vehicle Logic Controllers
             CarPhysicsController physicsController = carObj.AddComponent<CarPhysicsController>();
             OffTrackPenaltyHandler penaltyHandler = carObj.AddComponent<OffTrackPenaltyHandler>();
             LapTracker lapTracker = carObj.AddComponent<LapTracker>();
 
-            // 2. High-Fidelity 3D Sports Car Body (Aerodynamic Proportions: 4.5m x 2.0m x 1.15m)
+            // 2. High-Fidelity 3D Body Mesh Container
             GameObject bodyContainer = new GameObject("CarBodyContainer");
             bodyContainer.transform.SetParent(carObj.transform, false);
 
-            // Metallic Red Paint Material
-            Material metallicPaintMat = URPShaderUtility.CreateLitMaterial(new Color(0.85f, 0.08f, 0.08f), 0.9f, 0.92f); // Candy Apple Metallic Red
-            Material carbonRoofMat = URPShaderUtility.CreateLitMaterial(new Color(0.1f, 0.1f, 0.12f), 0.7f, 0.8f);     // Carbon Fiber Roof
-            Material glassMat = URPShaderUtility.CreateLitMaterial(new Color(0.05f, 0.05f, 0.08f), 0.95f, 0.95f);      // Tinted Obsidian Glass
-            Material headlightMat = URPShaderUtility.CreateEmissiveMaterial(new Color(0.95f, 0.95f, 1.0f), 3.0f);     // Xenon Headlights (Glowing)
-            Material tailLightMat = URPShaderUtility.CreateEmissiveMaterial(new Color(1.0f, 0.05f, 0.05f), 4.0f);      // Crimson LED Tail Lights (Glowing)
-            Material chromeMat = URPShaderUtility.CreateLitMaterial(new Color(0.85f, 0.85f, 0.88f), 0.95f, 0.9f);       // Chrome Exhaust & Trim
+            // Materials
+            Material paintMat = URPShaderUtility.CreateLitMaterial(paintColor, metallic, smoothness);
+            Material carbonMat = URPShaderUtility.CreateLitMaterial(new Color(0.1f, 0.1f, 0.12f), 0.8f, 0.85f);
+            Material glassMat = URPShaderUtility.CreateLitMaterial(new Color(0.05f, 0.05f, 0.08f), 0.95f, 0.95f);
+            Material headlightMat = URPShaderUtility.CreateEmissiveMaterial(new Color(0.95f, 0.98f, 1.0f), 3.5f);
+            Material tailLightMat = URPShaderUtility.CreateEmissiveMaterial(new Color(1.0f, 0.05f, 0.05f), 4.5f);
+            Material chromeMat = URPShaderUtility.CreateLitMaterial(new Color(0.88f, 0.88f, 0.9f), 0.95f, 0.9f);
 
-            // Save Materials
+            // Save Paint Material Asset
             if (!AssetDatabase.IsValidFolder("Assets/Art")) AssetDatabase.CreateFolder("Assets", "Art");
             if (!AssetDatabase.IsValidFolder("Assets/Art/Materials")) AssetDatabase.CreateFolder("Assets/Art", "Materials");
-            AssetDatabase.CreateAsset(metallicPaintMat, "Assets/Art/Materials/CarPaintMetallicRed.mat");
+            AssetDatabase.CreateAsset(paintMat, $"Assets/Art/Materials/{carName}_Paint.mat");
 
-            // Main Lower Body Chassis
-            GameObject mainBody = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            mainBody.name = "MainChassis";
-            mainBody.transform.SetParent(bodyContainer.transform, false);
-            mainBody.transform.localScale = new Vector3(2.0f, 0.55f, 4.5f);
-            mainBody.transform.localPosition = new Vector3(0, 0.45f, 0);
-            mainBody.GetComponent<MeshRenderer>().sharedMaterial = metallicPaintMat;
+            // Main Lower Chassis
+            GameObject mainChassis = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            mainChassis.name = "MainChassis";
+            mainChassis.transform.SetParent(bodyContainer.transform, false);
+            mainChassis.transform.localScale = new Vector3(2.05f, 0.5f, 4.5f);
+            mainChassis.transform.localPosition = new Vector3(0, 0.42f, 0);
+            mainChassis.GetComponent<MeshRenderer>().sharedMaterial = paintMat;
 
-            // Hood Slope
+            // Hood Section
             GameObject hood = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            hood.name = "FrontHood";
+            hood.name = "Hood";
             hood.transform.SetParent(bodyContainer.transform, false);
-            hood.transform.localScale = new Vector3(1.9f, 0.35f, 1.4f);
-            hood.transform.localPosition = new Vector3(0, 0.55f, 1.2f);
+            hood.transform.localScale = new Vector3(1.92f, 0.32f, 1.4f);
+            hood.transform.localPosition = new Vector3(0, 0.52f, 1.25f);
             hood.transform.localRotation = Quaternion.Euler(-5f, 0, 0);
-            hood.GetComponent<MeshRenderer>().sharedMaterial = metallicPaintMat;
+            hood.GetComponent<MeshRenderer>().sharedMaterial = paintMat;
 
-            // Aerodynamic Cabin Roof
+            // Cabin Roof
             GameObject cabin = GameObject.CreatePrimitive(PrimitiveType.Cube);
             cabin.name = "CabinRoof";
             cabin.transform.SetParent(bodyContainer.transform, false);
-            cabin.transform.localScale = new Vector3(1.65f, 0.55f, 1.9f);
-            cabin.transform.localPosition = new Vector3(0, 0.92f, -0.2f);
-            cabin.GetComponent<MeshRenderer>().sharedMaterial = carbonRoofMat;
+            cabin.transform.localScale = new Vector3(1.6f, 0.52f, 1.85f);
+            cabin.transform.localPosition = new Vector3(0, 0.88f, -0.2f);
+            cabin.GetComponent<MeshRenderer>().sharedMaterial = carbonMat;
 
-            // Tinted Windshield
+            // Windshield
             GameObject windshield = GameObject.CreatePrimitive(PrimitiveType.Cube);
             windshield.name = "Windshield";
             windshield.transform.SetParent(bodyContainer.transform, false);
-            windshield.transform.localScale = new Vector3(1.6f, 0.45f, 0.6f);
-            windshield.transform.localPosition = new Vector3(0, 0.9f, 0.65f);
+            windshield.transform.localScale = new Vector3(1.55f, 0.42f, 0.55f);
+            windshield.transform.localPosition = new Vector3(0, 0.86f, 0.65f);
             windshield.transform.localRotation = Quaternion.Euler(-30f, 0, 0);
             windshield.GetComponent<MeshRenderer>().sharedMaterial = glassMat;
 
-            // Dual Glowing Headlights
-            GameObject hlLeft = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            hlLeft.name = "Headlight_L";
-            hlLeft.transform.SetParent(bodyContainer.transform, false);
-            hlLeft.transform.localScale = new Vector3(0.45f, 0.15f, 0.1f);
-            hlLeft.transform.localPosition = new Vector3(-0.75f, 0.55f, 2.22f);
-            hlLeft.GetComponent<MeshRenderer>().sharedMaterial = headlightMat;
+            // Headlights & Tail Lights
+            GameObject hlL = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            hlL.name = "Headlight_L";
+            hlL.transform.SetParent(bodyContainer.transform, false);
+            hlL.transform.localScale = new Vector3(0.45f, 0.14f, 0.1f);
+            hlL.transform.localPosition = new Vector3(-0.75f, 0.52f, 2.22f);
+            hlL.GetComponent<MeshRenderer>().sharedMaterial = headlightMat;
 
-            GameObject hlRight = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            hlRight.name = "Headlight_R";
-            hlRight.transform.SetParent(bodyContainer.transform, false);
-            hlRight.transform.localScale = new Vector3(0.45f, 0.15f, 0.1f);
-            hlRight.transform.localPosition = new Vector3(0.75f, 0.55f, 2.22f);
-            hlRight.GetComponent<MeshRenderer>().sharedMaterial = headlightMat;
+            GameObject hlR = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            hlR.name = "Headlight_R";
+            hlR.transform.SetParent(bodyContainer.transform, false);
+            hlR.transform.localScale = new Vector3(0.45f, 0.14f, 0.1f);
+            hlR.transform.localPosition = new Vector3(0.75f, 0.52f, 2.22f);
+            hlR.GetComponent<MeshRenderer>().sharedMaterial = headlightMat;
 
-            // Glowing Crimson LED Tail Lights
-            GameObject tlLeft = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            tlLeft.name = "TailLight_L";
-            tlLeft.transform.SetParent(bodyContainer.transform, false);
-            tlLeft.transform.localScale = new Vector3(0.6f, 0.15f, 0.1f);
-            tlLeft.transform.localPosition = new Vector3(-0.7f, 0.55f, -2.26f);
-            tlLeft.GetComponent<MeshRenderer>().sharedMaterial = tailLightMat;
+            GameObject tlL = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            tlL.name = "TailLight_L";
+            tlL.transform.SetParent(bodyContainer.transform, false);
+            tlL.transform.localScale = new Vector3(0.65f, 0.14f, 0.1f);
+            tlL.transform.localPosition = new Vector3(-0.7f, 0.52f, -2.26f);
+            tlL.GetComponent<MeshRenderer>().sharedMaterial = tailLightMat;
 
-            GameObject tlRight = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            tlRight.name = "TailLight_R";
-            tlRight.transform.SetParent(bodyContainer.transform, false);
-            tlRight.transform.localScale = new Vector3(0.6f, 0.15f, 0.1f);
-            tlRight.transform.localPosition = new Vector3(0.7f, 0.55f, -2.26f);
-            tlRight.GetComponent<MeshRenderer>().sharedMaterial = tailLightMat;
+            GameObject tlR = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            tlR.name = "TailLight_R";
+            tlR.transform.SetParent(bodyContainer.transform, false);
+            tlR.transform.localScale = new Vector3(0.65f, 0.14f, 0.1f);
+            tlR.transform.localPosition = new Vector3(0.7f, 0.52f, -2.26f);
+            tlR.GetComponent<MeshRenderer>().sharedMaterial = tailLightMat;
 
-            // 3. Create Wheel Colliders & Visual Wheel Assemblies
+            // Style-Specific Custom Aerodynamic Parts
+            if (style == CarStyle.SupercarWithSpoiler)
+            {
+                // Rear Carbon GT Spoiler Wing
+                GameObject wing = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                wing.name = "RearGTSpoiler";
+                wing.transform.SetParent(bodyContainer.transform, false);
+                wing.transform.localScale = new Vector3(1.95f, 0.08f, 0.45f);
+                wing.transform.localPosition = new Vector3(0, 1.15f, -2.05f);
+                wing.GetComponent<MeshRenderer>().sharedMaterial = carbonMat;
+
+                // Struts
+                GameObject strutL = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                strutL.transform.SetParent(wing.transform, false);
+                strutL.transform.localScale = new Vector3(0.05f, 3.5f, 0.3f);
+                strutL.transform.localPosition = new Vector3(-0.35f, -1.8f, 0);
+                strutL.GetComponent<MeshRenderer>().sharedMaterial = carbonMat;
+
+                GameObject strutR = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                strutR.transform.SetParent(wing.transform, false);
+                strutR.transform.localScale = new Vector3(0.05f, 3.5f, 0.3f);
+                strutR.transform.localPosition = new Vector3(0.35f, -1.8f, 0);
+                strutR.GetComponent<MeshRenderer>().sharedMaterial = carbonMat;
+            }
+            else if (style == CarStyle.GTRacerWithVents)
+            {
+                // Hood Vents & Racing Splitter
+                GameObject splitter = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                splitter.name = "FrontSplitter";
+                splitter.transform.SetParent(bodyContainer.transform, false);
+                splitter.transform.localScale = new Vector3(2.1f, 0.08f, 0.4f);
+                splitter.transform.localPosition = new Vector3(0, 0.2f, 2.3f);
+                splitter.GetComponent<MeshRenderer>().sharedMaterial = carbonMat;
+            }
+            else if (style == CarStyle.WidebodyHypercar)
+            {
+                // Roof Scoop & Side Skirts
+                GameObject roofScoop = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                roofScoop.name = "RoofAirScoop";
+                roofScoop.transform.SetParent(bodyContainer.transform, false);
+                roofScoop.transform.localScale = new Vector3(0.45f, 0.2f, 0.6f);
+                roofScoop.transform.localPosition = new Vector3(0, 1.2f, 0.1f);
+                roofScoop.GetComponent<MeshRenderer>().sharedMaterial = carbonMat;
+            }
+
+            // 3. Wheel Assemblies
             GameObject wheelsContainer = new GameObject("Wheels");
             wheelsContainer.transform.SetParent(carObj.transform, false);
 
@@ -114,7 +186,7 @@ namespace DrawAndRace.Editor
             WheelCollider rlCollider = CreateWheelNode(wheelsContainer.transform, "Wheel_RL", new Vector3(-0.95f, 0.35f, -1.4f), chromeMat, out Transform rlMesh);
             WheelCollider rrCollider = CreateWheelNode(wheelsContainer.transform, "Wheel_RR", new Vector3(0.95f, 0.35f, -1.4f), chromeMat, out Transform rrMesh);
 
-            // 4. Assign Wheel Collider References to CarPhysicsController
+            // 4. Assign Wheel Collider References to Controller
             SerializedObject serializedController = new SerializedObject(physicsController);
             serializedController.FindProperty("_frontLeftWheel").objectReferenceValue = flCollider;
             serializedController.FindProperty("_frontRightWheel").objectReferenceValue = frCollider;
@@ -130,9 +202,9 @@ namespace DrawAndRace.Editor
             // 5. Save Prefab
             if (!AssetDatabase.IsValidFolder("Assets/Art/Models")) AssetDatabase.CreateFolder("Assets/Art", "Models");
 
-            string prefabPath = "Assets/Art/Models/SportsCarPrefab.prefab";
+            string prefabPath = $"Assets/Art/Models/{carName}.prefab";
             GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(carObj, prefabPath);
-            Debug.Log($"[CarPrefabBuilder] Hyper-Realistic 3D Sports Car Prefab created at {prefabPath}!");
+            Debug.Log($"[CarPrefabBuilder] 3D Car Model '{carName}' saved to {prefabPath}!");
 
             return carObj;
         }
@@ -154,17 +226,15 @@ namespace DrawAndRace.Editor
             spring.targetPosition = 0.5f;
             collider.suspensionSpring = spring;
 
-            // Visual Cylinder Wheel Mesh (Black Rubber Tire + Alloy Rim Core)
             GameObject wheelVisual = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             wheelVisual.name = $"{name}_Visual";
             wheelVisual.transform.SetParent(wheelObj.transform, false);
             wheelVisual.transform.localScale = new Vector3(0.76f, 0.18f, 0.76f);
             wheelVisual.transform.localRotation = Quaternion.Euler(0, 0, 90f);
 
-            Material tireMat = URPShaderUtility.CreateLitMaterial(new Color(0.08f, 0.08f, 0.09f), 0.2f, 0.4f); // Black Rubber Tire
+            Material tireMat = URPShaderUtility.CreateLitMaterial(new Color(0.08f, 0.08f, 0.09f), 0.2f, 0.4f);
             wheelVisual.GetComponent<MeshRenderer>().sharedMaterial = tireMat;
 
-            // Alloy Rim Core
             GameObject rimCore = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             rimCore.name = "AlloyRim";
             rimCore.transform.SetParent(wheelVisual.transform, false);
