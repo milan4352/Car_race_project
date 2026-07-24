@@ -127,11 +127,31 @@ namespace DrawAndRace.Editor
 
             victoryPanel.SetActive(false); // Hide victory modal on start
 
-            // 3. Create MainMenuController
+            // 3. Create MainMenuController & Auto-Assign All 3 Sports Cars
             GameObject menuObj = new GameObject("MainMenuController");
             MainMenuController mainMenu = menuObj.AddComponent<MainMenuController>();
 
-            Debug.Log("[Phase4UISceneBuilder] Phase 4 High-End HUD Speedometer & Core Game Loop UI successfully built!");
+            GameObject redCar = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Art/Models/SportsCar_Red.prefab");
+            GameObject blueCar = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Art/Models/SportsCar_Blue.prefab");
+            GameObject goldCar = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Art/Models/SportsCar_Gold.prefab");
+
+            if (redCar == null || blueCar == null || goldCar == null)
+            {
+                CarPrefabBuilder.BuildAllCars();
+                redCar = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Art/Models/SportsCar_Red.prefab");
+                blueCar = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Art/Models/SportsCar_Blue.prefab");
+                goldCar = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Art/Models/SportsCar_Gold.prefab");
+            }
+
+            SerializedObject menuSerialized = new SerializedObject(mainMenu);
+            SerializedProperty carArrayProp = menuSerialized.FindProperty("_carPrefabs");
+            carArrayProp.arraySize = 3;
+            carArrayProp.GetArrayElementAtIndex(0).objectReferenceValue = redCar;
+            carArrayProp.GetArrayElementAtIndex(1).objectReferenceValue = blueCar;
+            carArrayProp.GetArrayElementAtIndex(2).objectReferenceValue = goldCar;
+            menuSerialized.ApplyModifiedProperties();
+
+            Debug.Log("[Phase4UISceneBuilder] Phase 4 High-End HUD Speedometer & Core Game Loop UI successfully built with all 3 Cars assigned!");
         }
 
         private static GameObject CreatePanel(Transform parent, string name)
