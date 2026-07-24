@@ -11,9 +11,14 @@ namespace DrawAndRace.Editor
         [MenuItem("DrawAndRace/1. Build All 3 Real-Life Sports Cars", false, 1)]
         public static void BuildAllCars()
         {
-            BuildCarPrefab_Red();
-            BuildCarPrefab_Blue();
-            BuildCarPrefab_Gold();
+            GameObject red = BuildCarPrefab_Red();
+            GameObject blue = BuildCarPrefab_Blue();
+            GameObject gold = BuildCarPrefab_Gold();
+
+            if (red != null && red.scene.name != null) Object.DestroyImmediate(red);
+            if (blue != null && blue.scene.name != null) Object.DestroyImmediate(blue);
+            if (gold != null && gold.scene.name != null) Object.DestroyImmediate(gold);
+
             Debug.Log("[CarPrefabBuilder] Successfully created all 3 real-life sports car prefabs in Assets/Art/Models/!");
         }
 
