@@ -31,13 +31,13 @@ namespace DrawAndRace.TrackEditor
             _checkpointGenerator = GetComponent<CheckpointGenerator>();
             _environmentScatterer = GetComponent<ProceduralEnvironmentScatterer>();
 
-            if (_drawingCanvas == null) _drawingCanvas = FindFirstObjectByType<TrackDrawingCanvas>();
+            if (_drawingCanvas == null) _drawingCanvas = FindObjectOfType<TrackDrawingCanvas>();
             if (_editorCamera == null) _editorCamera = Camera.main;
         }
 
         private void OnEnable()
         {
-            if (_drawingCanvas == null) _drawingCanvas = FindFirstObjectByType<TrackDrawingCanvas>();
+            if (_drawingCanvas == null) _drawingCanvas = FindObjectOfType<TrackDrawingCanvas>();
             if (_drawingCanvas != null)
             {
                 _drawingCanvas.OnDrawingCompleted += HandleDrawingCompleted;
