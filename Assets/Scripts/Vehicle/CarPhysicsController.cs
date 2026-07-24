@@ -48,7 +48,24 @@ namespace DrawAndRace.Vehicle
         private void Awake()
         {
             _rigidbody = GetComponent<Rigidbody>();
-            _rigidbody.centerOfMass += _centerOfMassOffset;
+            if (_rigidbody != null)
+            {
+                _rigidbody.centerOfMass += _centerOfMassOffset;
+            }
+            AutoBindWheelReferences();
+        }
+
+        private void AutoBindWheelReferences()
+        {
+            if (_frontLeftWheel == null) _frontLeftWheel = transform.Find("Wheels/Wheel_FL")?.GetComponent<WheelCollider>();
+            if (_frontRightWheel == null) _frontRightWheel = transform.Find("Wheels/Wheel_FR")?.GetComponent<WheelCollider>();
+            if (_rearLeftWheel == null) _rearLeftWheel = transform.Find("Wheels/Wheel_RL")?.GetComponent<WheelCollider>();
+            if (_rearRightWheel == null) _rearRightWheel = transform.Find("Wheels/Wheel_RR")?.GetComponent<WheelCollider>();
+
+            if (_frontLeftTransform == null) _frontLeftTransform = transform.Find("Wheels/Wheel_FL/Wheel_FL_Visual");
+            if (_frontRightTransform == null) _frontRightTransform = transform.Find("Wheels/Wheel_FR/Wheel_FR_Visual");
+            if (_rearLeftTransform == null) _rearLeftTransform = transform.Find("Wheels/Wheel_RL/Wheel_RL_Visual");
+            if (_rearRightTransform == null) _rearRightTransform = transform.Find("Wheels/Wheel_RR/Wheel_RR_Visual");
         }
 
         private void Update()
@@ -77,37 +94,34 @@ namespace DrawAndRace.Vehicle
             float speedKmh = CurrentSpeedKmh;
             float activeTorque = _motorTorque * _speedMultiplier;
 
-            // Speed Governor
             if (speedKmh > _topSpeedKmh * _speedMultiplier)
             {
                 activeTorque = 0f;
             }
 
-            // Apply Motor Torque to Rear Wheels (RWD)
             float motorValue = _currentMotorInput * activeTorque;
-            _rearLeftWheel.motorTorque = motorValue;
-            _rearRightWheel.motorTorque = motorValue;
+            if (_rearLeftWheel != null) _rearLeftWheel.motorTorque = motorValue;
+            if (_rearRightWheel != null) _rearRightWheel.motorTorque = motorValue;
 
-            // Apply Brakes
             float brakeValue = _isBraking ? _brakeTorque : (_isHandbraking ? _brakeTorque * 0.5f : 0f);
-            _frontLeftWheel.brakeTorque = brakeValue;
-            _frontRightWheel.brakeTorque = brakeValue;
-            _rearLeftWheel.brakeTorque = brakeValue;
-            _rearRightWheel.brakeTorque = brakeValue;
+            if (_frontLeftWheel != null) _frontLeftWheel.brakeTorque = brakeValue;
+            if (_frontRightWheel != null) _frontRightWheel.brakeTorque = brakeValue;
+            if (_rearLeftWheel != null) _rearLeftWheel.brakeTorque = brakeValue;
+            if (_rearRightWheel != null) _rearRightWheel.brakeTorque = brakeValue;
         }
 
         private void ApplySteering()
         {
             float targetAngle = _currentSteerInput * _maxSteerAngle;
-            _frontLeftWheel.steerAngle = targetAngle;
-            _frontRightWheel.steerAngle = targetAngle;
+            if (_frontLeftWheel != null) _frontLeftWheel.steerAngle = targetAngle;
+            if (_frontRightWheel != null) _frontRightWheel.steerAngle = targetAngle;
         }
 
         private void ApplyDriftFriction()
         {
             float stiffness = _isHandbraking ? _driftSidewaysStiffness : _normalSidewaysStiffness;
-            SetWheelSidewaysStiffness(_rearLeftWheel, stiffness);
-            SetWheelSidewaysStiffness(_rearRightWheel, stiffness);
+            if (_rearLeftWheel != null) SetWheelSidewaysStiffness(_rearLeftWheel, stiffness);
+            if (_rearRightWheel != null) SetWheelSidewaysStiffness(_rearRightWheel, stiffness);
         }
 
         private void SetWheelSidewaysStiffness(WheelCollider wheel, float stiffness)
@@ -120,10 +134,10 @@ namespace DrawAndRace.Vehicle
 
         private void UpdateWheelVisuals()
         {
-            UpdateSingleWheel(_frontLeftWheel, _frontLeftTransform);
-            UpdateSingleWheel(_frontRightWheel, _frontRightTransform);
-            UpdateSingleWheel(_rearLeftWheel, _rearLeftTransform);
-            UpdateSingleWheel(_rearRightWheel, _rearRightTransform);
+            if (_frontLeftWheel != null && _frontLeftTransform != null) UpdateSingleWheel(_frontLeftWheel, _frontLeftTransform);
+            if (_frontRightWheel != null && _frontRightTransform != null) UpdateSingleWheel(_frontRightWheel, _frontRightTransform);
+            if (_rearLeftWheel != null && _rearLeftTransform != null) UpdateSingleWheel(_rearLeftWheel, _rearLeftTransform);
+            if (_rearRightWheel != null && _rearRightTransform != null) UpdateSingleWheel(_rearRightWheel, _rearRightTransform);
         }
 
         private void UpdateSingleWheel(WheelCollider collider, Transform transform)
