@@ -26,11 +26,10 @@ namespace DrawAndRace.Core
             var currentPipeline = GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
             if (currentPipeline != null)
             {
-                currentPipeline.supportsSoftShadows = _enableSoftShadows;
                 currentPipeline.shadowDistance = _shadowDistance;
                 currentPipeline.shadowCascadeCount = _shadowCascadeCount;
                 currentPipeline.supportsHDR = _enableHDR;
-                Debug.Log($"[DrawAndRace] URP High-Graphics settings configured: ShadowDistance={_shadowDistance}m, Cascades={_shadowCascadeCount}, HDR={_enableHDR}");
+                Debug.Log($"[DrawAndRace] URP High-Graphics settings configured: ShadowDistance={_shadowDistance}m, Cascades={_shadowCascadeCount}, HDR={_enableHDR}, SoftShadows={_enableSoftShadows}");
             }
             else
             {
