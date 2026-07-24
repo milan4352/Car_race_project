@@ -10,7 +10,7 @@ namespace DrawAndRace.Editor
 {
     public static class Phase4UISceneBuilder
     {
-        [MenuItem("DrawAndRace/Setup Phase 4 Full Game Loop & UI")]
+        [MenuItem("DrawAndRace/3. Setup Phase 4 Full Game Loop & UI", false, 3)]
         public static void BuildPhase4UI()
         {
             // Find or Create UI Canvas

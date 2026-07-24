@@ -8,7 +8,7 @@ namespace DrawAndRace.Editor
 {
     public static class CarPrefabBuilder
     {
-        [MenuItem("DrawAndRace/Build All 3 Real-Life Sports Cars")]
+        [MenuItem("DrawAndRace/1. Build All 3 Real-Life Sports Cars", false, 1)]
         public static void BuildAllCars()
         {
             BuildCarPrefab_Red();
@@ -17,19 +17,19 @@ namespace DrawAndRace.Editor
             Debug.Log("[CarPrefabBuilder] Successfully created all 3 real-life sports car prefabs in Assets/Art/Models/!");
         }
 
-        [MenuItem("DrawAndRace/Build 3D Sports Car - Metallic Red Supercar")]
+        [MenuItem("DrawAndRace/Car Models/Build Metallic Red Supercar", false, 10)]
         public static GameObject BuildCarPrefab_Red()
         {
             return CreateCarModel("SportsCar_Red", new Color(0.85f, 0.08f, 0.08f), 0.92f, 0.95f, CarStyle.SupercarWithSpoiler);
         }
 
-        [MenuItem("DrawAndRace/Build 3D Sports Car - Cobalt Blue GT Racer")]
+        [MenuItem("DrawAndRace/Car Models/Build Cobalt Blue GT Racer", false, 11)]
         public static GameObject BuildCarPrefab_Blue()
         {
             return CreateCarModel("SportsCar_Blue", new Color(0.08f, 0.35f, 0.85f), 0.88f, 0.90f, CarStyle.GTRacerWithVents);
         }
 
-        [MenuItem("DrawAndRace/Build 3D Sports Car - Liquid Gold Hypercar")]
+        [MenuItem("DrawAndRace/Car Models/Build Liquid Gold Hypercar", false, 12)]
         public static GameObject BuildCarPrefab_Gold()
         {
             return CreateCarModel("SportsCar_Gold", new Color(0.95f, 0.75f, 0.12f), 0.96f, 0.96f, CarStyle.WidebodyHypercar);

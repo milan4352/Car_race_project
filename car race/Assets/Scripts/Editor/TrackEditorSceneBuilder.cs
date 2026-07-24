@@ -15,7 +15,7 @@ namespace DrawAndRace.Editor
 {
     public static class TrackEditorSceneBuilder
     {
-        [MenuItem("DrawAndRace/Setup 3D Track Editor Scene")]
+        [MenuItem("DrawAndRace/Track Scene/Setup 3D Track Editor Scene", false, 20)]
         public static void BuildScene()
         {
             // 1. Create New Scene
@@ -109,7 +109,7 @@ namespace DrawAndRace.Editor
             Debug.Log($"[DrawAndRace] TrackEditorScene successfully built and saved to {scenePath}!");
         }
 
-        [MenuItem("DrawAndRace/Setup Simple Real Track Scene")]
+        [MenuItem("DrawAndRace/2. Setup Simple Real Track Scene", false, 2)]
         public static void BuildSimpleRealTrackScene()
         {
             BuildScene(); // Create foundational scene setup
