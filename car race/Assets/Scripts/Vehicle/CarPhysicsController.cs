@@ -5,6 +5,7 @@ namespace DrawAndRace.Vehicle
     /// <summary>
     /// 4-wheel vehicle physics controller supporting motor torque, front-wheel steering,
     /// dynamic weight transfer, brake/handbrake drift friction curves, and off-track modifiers.
+    /// Dual input system support (Legacy UnityEngine.Input & New UnityEngine.InputSystem).
     /// </summary>
     [RequireComponent(typeof(Rigidbody))]
     public class CarPhysicsController : MonoBehaviour
@@ -83,10 +84,54 @@ namespace DrawAndRace.Vehicle
 
         private void ReadInput()
         {
-            _currentMotorInput = Input.GetAxis("Vertical");
-            _currentSteerInput = Input.GetAxis("Horizontal");
-            _isBraking = Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow);
-            _isHandbraking = Input.GetKey(KeyCode.Space);
+            float vertical = 0f;
+            float horizontal = 0f;
+            bool isBrakingKey = false;
+            bool isHandbrakingKey = false;
+
+#if ENABLE_INPUT_SYSTEM
+            var keyboard = UnityEngine.InputSystem.Keyboard.current;
+            if (keyboard != null)
+            {
+                if (keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed) vertical += 1.0f;
+                if (keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed)
+                {
+                    vertical -= 1.0f;
+                    isBrakingKey = true;
+                }
+                if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed) horizontal -= 1.0f;
+                if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed) horizontal += 1.0f;
+                if (keyboard.spaceKey.isPressed) isHandbrakingKey = true;
+            }
+
+            var gamepad = UnityEngine.InputSystem.Gamepad.current;
+            if (gamepad != null)
+            {
+                Vector2 stick = gamepad.leftStick.ReadValue();
+                if (Mathf.Abs(stick.y) > 0.1f) vertical = stick.y;
+                if (Mathf.Abs(stick.x) > 0.1f) horizontal = stick.x;
+                if (gamepad.buttonSouth.isPressed || gamepad.rightTrigger.isPressed) vertical = 1.0f;
+                if (gamepad.buttonWest.isPressed || gamepad.leftTrigger.isPressed) isBrakingKey = true;
+                if (gamepad.buttonEast.isPressed) isHandbrakingKey = true;
+            }
+#else
+            try
+            {
+                vertical = Input.GetAxis("Vertical");
+                horizontal = Input.GetAxis("Horizontal");
+                isBrakingKey = Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow);
+                isHandbrakingKey = Input.GetKey(KeyCode.Space);
+            }
+            catch (System.Exception)
+            {
+                // Fallback in case of input system mismatch
+            }
+#endif
+
+            _currentMotorInput = vertical;
+            _currentSteerInput = horizontal;
+            _isBraking = isBrakingKey;
+            _isHandbraking = isHandbrakingKey;
         }
 
         private void ApplyMotorAndBrakes()
