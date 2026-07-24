@@ -71,16 +71,10 @@
     <Compile Include="Assets\Scripts\TrackEditor\TrackDrawingCanvas.cs" />
     <Compile Include="Assets\Scripts\TrackEditor\CheckpointGenerator.cs" />
     <Compile Include="Assets\Scripts\TrackEditor\TrackValidator.cs" />
-    <Compile Include="Assets\ProceduralEnvironmentScatterer.cs" />
-    <Compile Include="Assets\RoadMeshExtruder.cs" />
     <Compile Include="Assets\Scripts\Core\RenderPipelineConfigurator.cs" />
-    <Compile Include="Assets\TrackSplineGenerator.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\Scripts\TrackEditor\ProceduralEnvironmentScatterer.cs" />
-    <Compile Include="Assets\CheckpointGenerator.cs" />
-    <Compile Include="Assets\TrackDrawingCanvas.cs" />
     <Compile Include="Assets\Scripts\TrackEditor\TrackEditorManager.cs" />
-    <Compile Include="Assets\TrackEditorManager.cs" />
     <Compile Include="Assets\Scripts\TrackEditor\TrackSplineGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
